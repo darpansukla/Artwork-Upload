@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Artwork Portal</title>
+  <style>
+    /* --- Apple iOS Green Design System --- */
+    :root {
+      --apple-green: #34C759;
+      --apple-green-hover: #2db34f;
+      --apple-bg: #F2F2F7;
+      --apple-card-bg: rgba(255, 255, 255, 0.88);
+      --apple-text-primary: #1C1C1E;
+      --apple-text-secondary: #8E8E93;
+      --apple-border: #E5E5EA;
+      --apple-radius: 16px;
+      --apple-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--apple-bg);
+      color: var(--apple-text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--apple-card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--apple-radius);
+      box-shadow: var(--apple-shadow);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 24px 20px;
+      margin-top: auto;
+      margin-bottom: auto;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Headers & Navigation */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--apple-green);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    .back-btn:active {
+      background: rgba(52, 199, 89, 0.1);
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--apple-text-secondary);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* Form Controls & Searchable Dropdown */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--apple-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .searchable-select-container {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: #FFFFFF;
+      border: 1px solid var(--apple-border);
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--apple-text-primary);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--apple-green);
+      box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
+    }
+
+    .dropdown-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #FFFFFF;
+      border: 1px solid var(--apple-border);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      z-index: 100;
+      display: none;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #F2F2F7;
+      transition: background 0.15s ease;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover, .dropdown-item.selected {
+      background: rgba(52, 199, 89, 0.1);
+      color: var(--apple-green);
+      font-weight: 500;
+    }
+
+    /* Action Buttons */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background-color: var(--apple-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--apple-green-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background-color: var(--apple-border);
+      cursor: not-allowed;
+    }
+
+    /* Student Profile Card */
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #FFFFFF;
+      padding: 18px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--apple-border);
+      margin-bottom: 24px;
+    }
+
+    .profile-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--apple-green);
+      background-color: var(--apple-bg);
+      margin-bottom: 12px;
+    }
+
+    .profile-name {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--apple-text-primary);
+    }
+
+    .profile-class {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--apple-green);
+      background: rgba(52, 199, 89, 0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    /* File Upload Box */
+    .upload-box {
+      border: 2px dashed var(--apple-border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: #FFFFFF;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s ease;
+    }
+
+    .upload-box:hover {
+      border-color: var(--apple-green);
+    }
+
+    .upload-box input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .preview-img {
+      max-width: 100%;
+      max-height: 120px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+      object-fit: contain;
+    }
+
+    /* Success Screen Icon */
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: rgba(52, 199, 89, 0.15);
+      color: var(--apple-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 16px auto;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--apple-text-secondary);
+      text-align: center;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- SCREEN 1: Student Selection -->
+    <div id="screen1" class="screen active">
+      <h1 class="title" style="text-align: center; margin-bottom: 6px;">Student Portal</h1>
+      <p class="subtitle">Search & select your name to proceed</p>
+
+      <div class="form-group">
+        <label for="studentSearchInput">Student Name</label>
+        <div class="searchable-select-container">
+          <input type="text" id="studentSearchInput" class="search-input" placeholder="Type to search name..." autocomplete="off">
+          <div id="dropdownList" class="dropdown-list"></div>
+        </div>
+      </div>
+
+      <button id="nextBtn" class="btn" onclick="goToScreen2()" disabled>
+        <span>Next</span>
+      </button>
+    </div>
+
+    <!-- SCREEN 2: Artwork Upload -->
+    <div id="screen2" class="screen">
+      <div class="header-row">
+        <button class="back-btn" onclick="goToScreen1()">&#10094; Back</button>
+        <h1 class="title">Upload Artwork</h1>
+        <div style="width: 50px;"></div>
+      </div>
+      <p class="subtitle">Upload artwork images below</p>
+
+      <div class="profile-card">
+        <img id="passportPhoto" class="profile-photo" src="" alt="Passport Photo" onerror="this.src='https://via.placeholder.com/150/F2F2F7/8E8E93?text=No+Photo';">
+        <div id="displayName" class="profile-name">Student Name</div>
+        <div id="displayClass" class="profile-class">Class: N/A</div>
+      </div>
+
+      <form id="artworkForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label>Artwork 1</label>
+          <div class="upload-box">
+            <span id="labelArtwork1" style="color: var(--apple-text-secondary); font-size: 14px;">Tap to choose photo</span>
+            <input type="file" id="artwork1" accept="image/*" onchange="previewFile(this, 'preview1', 'labelArtwork1')" required>
+            <img id="preview1" class="preview-img" alt="Artwork 1 Preview">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Artwork 2</label>
+          <div class="upload-box">
+            <span id="labelArtwork2" style="color: var(--apple-text-secondary); font-size: 14px;">Tap to choose photo</span>
+            <input type="file" id="artwork2" accept="image/*" onchange="previewFile(this, 'preview2', 'labelArtwork2')">
+            <img id="preview2" class="preview-img" alt="Artwork 2 Preview">
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn">
+          <div class="spinner" id="btnSpinner"></div>
+          <span id="btnText">Submit</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- SCREEN 3: Success & Submit Another -->
+    <div id="screen3" class="screen">
+      <div class="success-icon">&#10003;</div>
+      <h1 class="title" style="margin-bottom: 8px;">Submitted Successfully!</h1>
+      <p class="subtitle" style="margin-bottom: 32px;">Your artwork has been saved to the Google Sheet.</p>
+
+      <button class="btn" onclick="resetForm()">
+        <span>Submit Another Artwork</span>
+      </button>
+    </div>
+
+  </div>
+
+  <footer>
+    Made by Darpan Sukla
+  </footer>
+
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR9MYoRpbaJg7oK3vqkTjfsm616eD9xvUeeE3DxTSzWCF5gCdBOdqfnQQbbwbnycXopvrScE5kg-3R6/pub?gid=0&single=true&output=csv';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtlymqyFQGNrjSIxyQaBhVD-YqJR8zhowvRAeou9JP0vdIbK9JzMD-zrVuPLXvB1J/exec';
+
+    let studentsData = [];
+    let selectedStudent = null;
+
+    function formatDriveImageUrl(url) {
+      if (!url) return '';
+      if (url.includes('drive.google.com') || url.includes('docs.google.com')) {
+        let match = url.match(/\/d\/([^\/]+)/) || url.match(/id=([^&]+)/);
+        if (match && match[1]) {
+          return 'https://lh3.googleusercontent.com/d/' + match[1];
+        }
+      }
+      return url;
+    }
+
+    function parseCSV(text) {
+      const lines = text.split(/\r\n|\n/);
+      const result = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const row = [];
+        let insideQuote = false;
+        let entry = '';
+        for (let char of lines[i]) {
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === ',' && !insideQuote) {
+            row.push(entry.trim());
+            entry = '';
+          } else {
+            entry += char;
+          }
+        }
+        row.push(entry.trim());
+        result.push(row);
+      }
+      return result;
+    }
+
+    async function loadStudents() {
+      try {
+        const response = await fetch(CSV_URL);
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+
+        studentsData = rows.map(row => ({
+          name: row[3] || 'Unknown',
+          fineArtsClass: row[16] || 'N/A',
+          photoUrl: formatDriveImageUrl(row[17] || '')
+        })).filter(s => s.name && s.name !== 'Student Name');
+
+        studentsData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'accent', numeric: true }));
+
+        setupSearchableDropdown();
+      } catch (err) {
+        alert('Failed to load student list. Please check your connection.');
+      }
+    }
+
+    function setupSearchableDropdown() {
+      const input = document.getElementById('studentSearchInput');
+      const list = document.getElementById('dropdownList');
+      const nextBtn = document.getElementById('nextBtn');
+
+      function renderList(filterText = '') {
+        list.innerHTML = '';
+        const filtered = studentsData.filter(s => s.name.toLowerCase().includes(filterText.toLowerCase()));
+
+        if (filtered.length === 0) {
+          list.innerHTML = '<div class="dropdown-item" style="color: #8E8E93; cursor: default;">No student found</div>';
+          return;
+        }
+
+        filtered.forEach(student => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          item.textContent = student.name;
+          item.onclick = () => {
+            input.value = student.name;
+            selectedStudent = student;
+            list.style.display = 'none';
+            nextBtn.disabled = false;
+          };
+          list.appendChild(item);
+        });
+      }
+
+      input.onfocus = () => {
+        renderList(input.value);
+        list.style.display = 'block';
+      };
+
+      input.oninput = (e) => {
+        selectedStudent = null;
+        nextBtn.disabled = true;
+        renderList(e.target.value);
+        list.style.display = 'block';
+      };
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.searchable-select-container')) {
+          list.style.display = 'none';
+        }
+      });
+    }
+
+    function goToScreen2() {
+      if (!selectedStudent) return;
+
+      document.getElementById('displayName').textContent = selectedStudent.name;
+      document.getElementById('displayClass').textContent = 'Class: ' + selectedStudent.fineArtsClass;
+      
+      const photoEl = document.getElementById('passportPhoto');
+      photoEl.src = selectedStudent.photoUrl || 'https://via.placeholder.com/150/F2F2F7/8E8E93?text=No+Photo';
+
+      document.getElementById('screen1').classList.remove('active');
+      document.getElementById('screen2').classList.add('active');
+    }
+
+    function goToScreen1() {
+      document.getElementById('screen2').classList.remove('active');
+      document.getElementById('screen1').classList.add('active');
+    }
+
+    function previewFile(input, previewId, labelId) {
+      const file = input.files[0];
+      const preview = document.getElementById(previewId);
+      const label = document.getElementById(labelId);
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          label.textContent = file.name;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '';
+        preview.style.display = 'none';
+        label.textContent = 'Tap to choose photo';
+      }
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1000;
+            const MAX_HEIGHT = 1000;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            const base64String = dataUrl.split(',')[1];
+            resolve({
+              base64: base64String,
+              mimeType: 'image/jpeg'
+            });
+          };
+        };
+      });
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('btnSpinner');
+
+      btn.disabled = true;
+      spinner.style.display = 'inline-block';
+      btnText.textContent = 'Uploading...';
+
+      try {
+        const file1 = document.getElementById('artwork1').files[0];
+        const file2 = document.getElementById('artwork2').files[0];
+
+        const artwork1Data = await compressImage(file1);
+        const artwork2Data = await compressImage(file2);
+
+        const payload = {
+          studentName: selectedStudent.name,
+          fineArtsClass: selectedStudent.fineArtsClass,
+          artwork1: artwork1Data,
+          artwork2: artwork2Data
+        };
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        spinner.style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Submit';
+        
+        showSuccessScreen();
+
+      } catch (err) {
+        spinner.style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Submit';
+        alert('Submission failed: ' + err.message);
+      }
+    }
+
+    function showSuccessScreen() {
+      document.getElementById('screen2').classList.remove('active');
+      document.getElementById('screen3').classList.add('active');
+    }
+
+    function resetForm() {
+      document.getElementById('artworkForm').reset();
+      document.getElementById('studentSearchInput').value = '';
+      document.getElementById('nextBtn').disabled = true;
+      selectedStudent = null;
+
+      ['preview1', 'preview2'].forEach(id => {
+        const el = document.getElementById(id);
+        el.src = '';
+        el.style.display = 'none';
+      });
+      document.getElementById('labelArtwork1').textContent = 'Tap to choose photo';
+      document.getElementById('labelArtwork2').textContent = 'Tap to choose photo';
+
+      document.getElementById('screen3').classList.remove('active');
+      document.getElementById('screen1').classList.add('active');
+    }
+
+    window.onload = loadStudents;
+  </script>
+</body>
+</html>
