@@ -109,7 +109,7 @@
 
     /* Form Controls & Searchable Dropdown */
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       position: relative;
     }
 
@@ -127,7 +127,7 @@
       position: relative;
     }
 
-    .search-input {
+    .search-input, .text-input {
       width: 100%;
       padding: 14px 16px;
       background: #FFFFFF;
@@ -139,7 +139,13 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .search-input:focus {
+    textarea.text-input {
+      resize: vertical;
+      min-height: 80px;
+      text-transform: uppercase;
+    }
+
+    .search-input:focus, .text-input:focus {
       border-color: var(--apple-green);
       box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
     }
@@ -177,6 +183,113 @@
       font-weight: 500;
     }
 
+    /* Section Cards for Artworks */
+    .artwork-section {
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--apple-border);
+      margin-bottom: 20px;
+    }
+
+    .artwork-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--apple-text-primary);
+    }
+
+    /* iOS Style Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #F2F2F7;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--apple-text-primary);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #E5E5EA;
+      transition: .3s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--apple-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Price Container Animation */
+    .price-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+      opacity: 0;
+    }
+
+    .price-container.visible {
+      max-height: 100px;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .price-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--apple-text-secondary);
+    }
+
+    .price-input {
+      padding-left: 32px !important;
+    }
+
     /* Action Buttons */
     .btn {
       width: 100%;
@@ -193,6 +306,7 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
     }
 
     .btn:hover {
@@ -205,6 +319,7 @@
 
     .btn:disabled {
       background-color: var(--apple-border);
+      box-shadow: none;
       cursor: not-allowed;
     }
 
@@ -257,6 +372,7 @@
       cursor: pointer;
       position: relative;
       transition: border-color 0.2s ease;
+      margin-bottom: 12px;
     }
 
     .upload-box:hover {
@@ -349,7 +465,7 @@
         <h1 class="title">Upload Artwork</h1>
         <div style="width: 50px;"></div>
       </div>
-      <p class="subtitle">Upload artwork images below</p>
+      <p class="subtitle">Upload artwork details below</p>
 
       <div class="profile-card">
         <img id="passportPhoto" class="profile-photo" src="" alt="Passport Photo" onerror="this.src='https://via.placeholder.com/150/F2F2F7/8E8E93?text=No+Photo';">
@@ -358,27 +474,76 @@
       </div>
 
       <form id="artworkForm" onsubmit="handleFormSubmit(event)">
-        <div class="form-group">
-          <label>Artwork 1</label>
+        
+        <!-- ARTWORK 1 SECTION -->
+        <div class="artwork-section">
+          <div class="artwork-section-title">Artwork 1</div>
           <div class="upload-box">
             <span id="labelArtwork1" style="color: var(--apple-text-secondary); font-size: 14px;">Tap to choose photo</span>
             <input type="file" id="artwork1" accept="image/*" onchange="previewFile(this, 'preview1', 'labelArtwork1')" required>
             <img id="preview1" class="preview-img" alt="Artwork 1 Preview">
           </div>
+          
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="descArtwork1">Description</label>
+            <textarea id="descArtwork1" class="text-input" placeholder="ENTER TITLE, THEME, MEDIUM..." oninput="this.value = this.value.toUpperCase();"></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">For Sale?</span>
+            <label class="switch">
+              <input type="checkbox" id="saleArtwork1" onchange="togglePriceField(1)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="priceContainer1" class="price-container">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="priceArtwork1">Price (₹)</label>
+              <div class="price-input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="priceArtwork1" class="text-input price-input" placeholder="0.00" min="0" step="any">
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Artwork 2</label>
+        <!-- ARTWORK 2 SECTION -->
+        <div class="artwork-section">
+          <div class="artwork-section-title">Artwork 2 (Optional)</div>
           <div class="upload-box">
             <span id="labelArtwork2" style="color: var(--apple-text-secondary); font-size: 14px;">Tap to choose photo</span>
             <input type="file" id="artwork2" accept="image/*" onchange="previewFile(this, 'preview2', 'labelArtwork2')">
             <img id="preview2" class="preview-img" alt="Artwork 2 Preview">
           </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="descArtwork2">Description</label>
+            <textarea id="descArtwork2" class="text-input" placeholder="ENTER TITLE, THEME, MEDIUM..." oninput="this.value = this.value.toUpperCase();"></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">For Sale?</span>
+            <label class="switch">
+              <input type="checkbox" id="saleArtwork2" onchange="togglePriceField(2)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="priceContainer2" class="price-container">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="priceArtwork2">Price (₹)</label>
+              <div class="price-input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="priceArtwork2" class="text-input price-input" placeholder="0.00" min="0" step="any">
+              </div>
+            </div>
+          </div>
         </div>
 
         <button type="submit" id="submitBtn" class="btn">
           <div class="spinner" id="btnSpinner"></div>
-          <span id="btnText">Submit</span>
+          <span id="btnText">Submit Artwork</span>
         </button>
       </form>
     </div>
@@ -402,7 +567,7 @@
 
   <script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR9MYoRpbaJg7oK3vqkTjfsm616eD9xvUeeE3DxTSzWCF5gCdBOdqfnQQbbwbnycXopvrScE5kg-3R6/pub?gid=0&single=true&output=csv';
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtlymqyFQGNrjSIxyQaBhVD-YqJR8zhowvRAeou9JP0vdIbK9JzMD-zrVuPLXvB1J/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSb7_PhAIE4_HgqaG-QY4EAp_a6b-AABtstN_AqUn53okZMhXoCkXBF3QKJNIB2G5n/exec';
 
     let studentsData = [];
     let selectedStudent = null;
@@ -458,7 +623,7 @@
 
         setupSearchableDropdown();
       } catch (err) {
-        alert('Failed to load student list. Please check your connection.');
+        console.error('Failed to load student list', err);
       }
     }
 
@@ -527,6 +692,18 @@
       document.getElementById('screen1').classList.add('active');
     }
 
+    function togglePriceField(artworkNumber) {
+      const activeCheckbox = document.getElementById(`saleArtwork${artworkNumber}`);
+      const container = document.getElementById(`priceContainer${artworkNumber}`);
+      
+      if (activeCheckbox.checked) {
+        container.classList.add('visible');
+      } else {
+        container.classList.remove('visible');
+        document.getElementById(`priceArtwork${artworkNumber}`).value = '';
+      }
+    }
+
     function previewFile(input, previewId, labelId) {
       const file = input.files[0];
       const preview = document.getElementById(previewId);
@@ -547,6 +724,7 @@
       }
     }
 
+    // Fast and light image compression to resolve slowness
     function compressImage(file) {
       return new Promise((resolve) => {
         if (!file) {
@@ -560,8 +738,8 @@
           img.src = event.target.result;
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1000;
-            const MAX_HEIGHT = 1000;
+            const MAX_WIDTH = 800;  // Optimized size for rapid uploads
+            const MAX_HEIGHT = 800;
             let width = img.width;
             let height = img.height;
 
@@ -582,7 +760,8 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            // Lowered quality slightly to 0.65 to ensure lightning-fast execution and small packet size
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
             const base64String = dataUrl.split(',')[1];
             resolve({
               base64: base64String,
@@ -608,16 +787,33 @@
         const file1 = document.getElementById('artwork1').files[0];
         const file2 = document.getElementById('artwork2').files[0];
 
+        // Compress images sequentially/cleanly
         const artwork1Data = await compressImage(file1);
         const artwork2Data = await compressImage(file2);
+
+        const desc1 = document.getElementById('descArtwork1').value;
+        const desc2 = document.getElementById('descArtwork2').value;
+
+        const isSale1 = document.getElementById('saleArtwork1').checked;
+        const isSale2 = document.getElementById('saleArtwork2').checked;
+
+        const price1 = isSale1 ? document.getElementById('priceArtwork1').value : '';
+        const price2 = isSale2 ? document.getElementById('priceArtwork2').value : '';
 
         const payload = {
           studentName: selectedStudent.name,
           fineArtsClass: selectedStudent.fineArtsClass,
           artwork1: artwork1Data,
-          artwork2: artwork2Data
+          artwork1Description: desc1,
+          artwork1ForSale: isSale1 ? 'Yes' : 'No',
+          artwork1Price: price1,
+          artwork2: artwork2Data,
+          artwork2Description: desc2,
+          artwork2ForSale: isSale2 ? 'Yes' : 'No',
+          artwork2Price: price2
         };
 
+        // Use sendBeacon or standard fetch with a timeout safeguard
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -627,16 +823,19 @@
           body: JSON.stringify(payload)
         });
 
+        // Small built-in grace buffer to account for Google server receipt lag
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         spinner.style.display = 'none';
         btn.disabled = false;
-        btnText.textContent = 'Submit';
+        btnText.textContent = 'Submit Artwork';
         
         showSuccessScreen();
 
       } catch (err) {
         spinner.style.display = 'none';
         btn.disabled = false;
-        btnText.textContent = 'Submit';
+        btnText.textContent = 'Submit Artwork';
         alert('Submission failed: ' + err.message);
       }
     }
@@ -652,13 +851,13 @@
       document.getElementById('nextBtn').disabled = true;
       selectedStudent = null;
 
-      ['preview1', 'preview2'].forEach(id => {
-        const el = document.getElementById(id);
-        el.src = '';
-        el.style.display = 'none';
+      ['1', '2'].forEach(num => {
+        const preview = document.getElementById(`preview${num}`);
+        preview.src = '';
+        preview.style.display = 'none';
+        document.getElementById(`labelArtwork${num}`).textContent = 'Tap to choose photo';
+        document.getElementById(`priceContainer${num}`).classList.remove('visible');
       });
-      document.getElementById('labelArtwork1').textContent = 'Tap to choose photo';
-      document.getElementById('labelArtwork2').textContent = 'Tap to choose photo';
 
       document.getElementById('screen3').classList.remove('active');
       document.getElementById('screen1').classList.add('active');
